@@ -160,14 +160,29 @@ GraphSearch.prototype.makeRoute = async function() {
     aeorplanes.sort(compare);
 
     for(var i =0; i < aeorplanes.length; i++){
-        
+
+        var path = this.search(this.graph, [0][0], [0][0]);
         var start = this.graph.grid[aeorplanes[i].start_x][aeorplanes[i].start_y];
-        var end = this.graph.grid[aeorplanes[i].end_x][aeorplanes[i].end_y];
+        
+        while(path.length==0){
 
-        var path = this.search(this.graph, start, end);
+            var end = this.graph.grid[aeorplanes[i].end_x][aeorplanes[i].end_y];
 
-        if(path.length != 0) 
-            this.animatePath(path);
+            path = this.search(this.graph, start, end);
+
+            if(path.length == 0){
+                console.log("ENTROUUUU");
+                do{
+                    var newAirportDestination = Math.floor(Math.random() * ((airports.length-1) - 0 + 1)) + 0;
+                } while(airports[newAirportDestination].x == aeorplanes[i].end_x && airports[newAirportDestination].y == aeorplanes[i].end_y); 
+
+            aeorplanes[i].end_x = airports[newAirportDestination].x;
+            aeorplanes[i].end_y = airports[newAirportDestination].y;
+
+            }
+        } 
+    
+        this.animatePath(path);
 
         await new Promise(resolve => setTimeout(resolve, 1000));
 
